@@ -22,7 +22,7 @@ public class GeneratePresetImpl implements GeneratePreset {
         Random random = new Random();
         List<Unit> attackEffective = new ArrayList<>(unitList);
         List<Unit> healthEffective = new ArrayList<>(unitList);
-        List<Point> points = new LinkedList<>();
+        Set<String> points = new HashSet<>();
         List<Unit> army = new LinkedList<>();
         HashMap<String, Integer> typeCount = new HashMap<>();
 
@@ -52,17 +52,16 @@ public class GeneratePresetImpl implements GeneratePreset {
                         item.getAttackBonuses(), item.getDefenceBonuses(),
                         item.getxCoordinate(), item.getyCoordinate());
                 unit.setName(item.getName() + " " + i);
-                unit.setxCoordinate(random.nextInt(3));
-                unit.setyCoordinate(random.nextInt(21));
-                for(int j = 0; j < points.size(); j++ ){
-                    Point point = points.get(j);
-                    if(point.x == unit.getxCoordinate() && point.y == unit.getyCoordinate()){
-                        unit.setxCoordinate(random.nextInt(3));
-                        unit.setyCoordinate(random.nextInt(21));
-                        j = 0;
-                    }
-                }
-                points.add(new Point(unit.getxCoordinate(), unit.getyCoordinate()));
+                String pointKey;
+                int x, y;
+                do {
+                    x = random.nextInt(3);
+                    y = random.nextInt(21);
+                    pointKey = x + "," + y;
+                }while (points.contains(pointKey));
+                unit.setxCoordinate(x);
+                unit.setyCoordinate(y);
+                points.add(pointKey);
                 avg -= item.getCost();
                 typeCount.put(type, i);
                 army.add(unit);
@@ -75,26 +74,25 @@ public class GeneratePresetImpl implements GeneratePreset {
         for(Unit item: healthEffective){
             String type = item.getUnitType();
             int currentCount = typeCount.get(type);
-            for(int i = currentCount; i <= MAX_UNIT_ONE_TYPE; i++){
-                if((avg - item.getCost()) < 0){
+            for(int i = currentCount; i <= MAX_UNIT_ONE_TYPE; i++) {
+                if ((avg - item.getCost()) < 0) {
                     break;
                 }
-                Unit unit = new Unit(item.getName(),item.getUnitType(),
+                Unit unit = new Unit(item.getName(), item.getUnitType(),
                         item.getHealth(), item.getBaseAttack(), item.getCost(), item.getAttackType(),
                         item.getAttackBonuses(), item.getDefenceBonuses(),
                         item.getxCoordinate(), item.getyCoordinate());
                 unit.setName(item.getName() + " " + i);
-                unit.setxCoordinate(random.nextInt(3));
-                unit.setyCoordinate(random.nextInt(21));
-                for(int j = 0; j < points.size(); j++ ){
-                    Point point = points.get(j);
-                    if(point.x == unit.getxCoordinate() && point.y == unit.getyCoordinate()){
-                        unit.setxCoordinate(random.nextInt(3));
-                        unit.setyCoordinate(random.nextInt(21));
-                        j = -1;
-                    }
-                }
-                points.add(new Point(unit.getxCoordinate(), unit.getyCoordinate()));
+                String pointKey;
+                int x, y;
+                do {
+                    x = random.nextInt(3);
+                    y = random.nextInt(21);
+                    pointKey = x + "," + y;
+                } while (points.contains(pointKey));
+                unit.setxCoordinate(x);
+                unit.setyCoordinate(y);
+                points.add(pointKey);
                 avg -= item.getCost();
                 typeCount.put(type, i);
                 army.add(unit);
